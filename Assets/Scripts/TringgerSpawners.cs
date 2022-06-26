@@ -10,6 +10,7 @@ public class TringgerSpawners : MonoBehaviour
 
     private Transform[] _spawners;
     private SpawnEnemy _currentSpawner;
+    private Coroutine _coroutine;
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class TringgerSpawners : MonoBehaviour
             _spawners[i] = _spawner.GetChild(i);
         }
 
-        StartCoroutine(TriggerSpawnres());
+        _coroutine = StartCoroutine(TriggerSpawnres());
     }
 
     IEnumerator TriggerSpawnres()
