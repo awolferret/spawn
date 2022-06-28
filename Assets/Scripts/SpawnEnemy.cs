@@ -4,14 +4,52 @@ using UnityEngine;
 
 public class SpawnEnemy : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemy;
+    [SerializeField] private Enemy _enemy;
+    [SerializeField] private int _spawnCount;
     [SerializeField] private Transform _spawnPoint;
 
-    public void Spawn()
+    private Transform[] _spawnPoints;
+    private Coroutine _coroutine;
+
+    private void Start()
     {
-        float randomX = Random.Range(_spawnPoint.position.x - 1f, _spawnPoint.position.x + 1f);
-        float randomY = Random.Range(_spawnPoint.position.y - 1f, _spawnPoint.position.y + 1f);
+        _spawnPoints = new Transform[_spawnPoint.childCount];
+
+        for (int i = 0; i < _spawnPoint.childCount; i++)
+        {
+            _spawnPoints[i] = _spawnPoint.GetChild(i);
+        }
+
+        _coroutine = StartCoroutine(SpawnEnemies());
+    }
+
+    private IEnumerator SpawnEnemies()
+    {
+        while (_spawnCount > 0)
+        {
+            for (int i = 0; i < _spawnPoints.Length; i++)
+            {
+                int waitTime = 2;
+                var waitType = new WaitForSeconds(waitTime);
+                Spawn(ChoosePoint(_spawnPoints[i]));
+                yield return waitType;
+            }
+
+            _spawnCount--;
+        }
+    }
+
+    private Vector2 ChoosePoint(Transform _spawnPoint)
+    {
+        float range = 1f;
+        float randomX = Random.Range(_spawnPoint.position.x - range, _spawnPoint.position.x + range);
+        float randomY = Random.Range(_spawnPoint.position.y - range, _spawnPoint.position.y + range);
         Vector2 whereToSpawn = new Vector2(randomX, randomY);
-        GameObject newObject = Instantiate(_enemy,whereToSpawn, Quaternion.identity);
+        return whereToSpawn;
+    }
+
+    private void Spawn(Vector2 whereToSpawn)
+    {
+        Enemy newObject = Instantiate(_enemy,whereToSpawn, Quaternion.identity);
     }  
 }
